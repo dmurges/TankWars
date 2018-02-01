@@ -2,6 +2,8 @@
 
 #include "TankAimingComponent.h"
 #include "GameFramework/Actor.h"
+#include "TankBarrel.h"
+#include "Kismet/GameplayStatics.h"
 #include "TankWars.h"
 
 
@@ -15,34 +17,43 @@ UTankAimingComponent::UTankAimingComponent()
 	// ...
 }
 
-void UTankAimingComponent::SetBarrelReference(UStaticMeshComponent* barrelToSet)
+void UTankAimingComponent::SetBarrelReference(UTankBarrel* barrelToSet)
 {
 	Barrel = barrelToSet;
 }
 
 
-// Called when the game starts
-void UTankAimingComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// ...
+void UTankAimingComponent::AimAt(FVector hitLocation, float launchSpeed) {
 	
+	if (!Barrel) { return; }
+
+	FVector outLaunchVelocity;
+	FVector startLocation = Barrel->GetSocketLocation(FName("Projectile"));
+
+	// Calculate outLaunchVelocity
+	if (UGameplayStatics::SuggestProjectileVelocity(
+		this,
+		outLaunchVelocity,
+		startLocation,
+		hitLocation,
+		launchSpeed,
+		ESuggestProjVelocityTraceOption::DoNotTrace
+		))
+	{
+		auto aimDirection = outLaunchVelocity.GetSafeNormal();
+		MoveBarrelTowards(aimDirection);
+
+		
+	}
 }
 
-
-// Called every frame
-void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UTankAimingComponent::MoveBarrelTowards(FVector aimDirection)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	auto barrelRotator = Barrel->GetForwardVector().Rotation();
+	auto aimAsRotator = aimDirection.Rotation();
+	auto deltaRotator = aimAsRotator - barrelRotator;
 
-	// ...
-}
-
-void UTankAimingComponent::AimAt(FVector hitLocation) {
-	
-	auto ourTankName = GetOwner()->GetName();
-	auto barrelLocation = Barrel->GetComponentLocation().ToString();
-	UE_LOG(LogTemp, Warning, TEXT("%s aiming at %s from %s"), *ourTankName, *hitLocation.ToString(), *barrelLocation);
+	UE_LOG(LogTemp, Warning, TEXT("AimAsRotator: %s"), *aimAsRotator.ToString());
+	Barrel->Elevate(5);
 }
 

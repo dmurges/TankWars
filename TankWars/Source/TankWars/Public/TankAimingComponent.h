@@ -7,26 +7,26 @@
 #include "TankAimingComponent.generated.h"
 
 
+class UTankBarrel; //forward declaration
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class TANKWARS_API UTankAimingComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 private:
-	UStaticMeshComponent* Barrel = nullptr;
+	UTankBarrel* Barrel = nullptr;
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+	void MoveBarrelTowards(FVector aimDirection);
+
 
 public:	
 	// Sets default values for this component's properties
 	UTankAimingComponent();
 
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	void AimAt(FVector hitLocation);
+	void AimAt(FVector hitLocation, float launchSpeed);
 	
-	void SetBarrelReference(UStaticMeshComponent* barrelToSet);
+	void SetBarrelReference(UTankBarrel* barrelToSet);
+	
+
 };

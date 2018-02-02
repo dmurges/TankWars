@@ -2,6 +2,7 @@
 
 #include "Tank.h"
 #include "TankAimingComponent.h"
+#include "Engine/World.h"
 #include "UObject/UObjectGlobals.h"
 
 
@@ -32,6 +33,13 @@ void ATank::AimAt(FVector hitLocation) {
 
 	tankAimingComponent->AimAt(hitLocation, launchSpeed);
 
+}
+
+void ATank::Fire() {
+
+	auto time = GetWorld()->GetTimeSeconds();
+
+	UE_LOG(LogTemp, Warning, TEXT("%f: Tank fires"), time);
 }
 
 void ATank::SetBarrelReference(UTankBarrel* barrelToSet)

@@ -15,12 +15,12 @@ class TANKWARS_API UTankBarrel : public UStaticMeshComponent
 	GENERATED_BODY()
 	
 public:
-	void Elevate(float degreesPerSecond);
+	void Elevate(float relativeSpeed);
 	
 private:
 
 	UPROPERTY(EditAnywhere, Category = Setup)
-	float maxDegreesPerSecond = 20;
+	float maxDegreesPerSecond = 5;
 
 	UPROPERTY(EditAnywhere, Category = Setup)
 	float maxElevationDegrees = 40;

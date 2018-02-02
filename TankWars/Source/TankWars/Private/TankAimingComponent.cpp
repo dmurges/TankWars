@@ -2,6 +2,7 @@
 
 #include "TankAimingComponent.h"
 #include "GameFramework/Actor.h"
+#include "Engine/World.h"
 #include "TankBarrel.h"
 #include "Kismet/GameplayStatics.h"
 #include "TankWars.h"
@@ -37,13 +38,23 @@ void UTankAimingComponent::AimAt(FVector hitLocation, float launchSpeed) {
 		startLocation,
 		hitLocation,
 		launchSpeed,
+		false,
+		0,
+		0,
 		ESuggestProjVelocityTraceOption::DoNotTrace
 		))
 	{
 		auto aimDirection = outLaunchVelocity.GetSafeNormal();
 		MoveBarrelTowards(aimDirection);
 
+		auto time = GetWorld()->GetTimeSeconds();
+
+		UE_LOG(LogTemp, Warning, TEXT("%f: Aim solution found"), time);
 		
+	}
+	else {
+		auto time = GetWorld()->GetTimeSeconds();
+		UE_LOG(LogTemp, Warning, TEXT("%f: No aim solve found"), time);
 	}
 }
 
@@ -54,6 +65,6 @@ void UTankAimingComponent::MoveBarrelTowards(FVector aimDirection)
 	auto deltaRotator = aimAsRotator - barrelRotator;
 
 	UE_LOG(LogTemp, Warning, TEXT("AimAsRotator: %s"), *aimAsRotator.ToString());
-	Barrel->Elevate(5);
+	Barrel->Elevate(deltaRotator.Pitch);
 }
 
